@@ -16,20 +16,20 @@ dp = Dispatcher()
 
 def get_main_keyboard():
     buttons = [
-        [InlineKeyboardButton("💰 Wallet", callback_data="no_access"), InlineKeyboardButton("📊 Portfolio", callback_data="no_access")],
-        [InlineKeyboardButton("📈 Market", callback_data="no_access"), InlineKeyboardButton("⚡ Staking", callback_data="no_access")],
-        [InlineKeyboardButton("🎁 Airdrops", callback_data="no_access"), InlineKeyboardButton("🔗 Refer & Earn", callback_data="no_access")],
-        [InlineKeyboardButton("🚀 Upgrade Plan", callback_data="no_access")]
+        [InlineKeyboardButton(text="💰 Wallet", callback_data="no_access"), InlineKeyboardButton(text="📊 Portfolio", callback_data="no_access")],
+        [InlineKeyboardButton(text="📈 Market", callback_data="no_access"), InlineKeyboardButton(text="⚡ Staking", callback_data="no_access")],
+        [InlineKeyboardButton(text="🎁 Airdrops", callback_data="no_access"), InlineKeyboardButton(text="🔗 Refer & Earn", callback_data="no_access")],
+        [InlineKeyboardButton(text="🚀 Upgrade Plan", callback_data="no_access")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 commands_keyboard = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton("/start"), KeyboardButton("/authorize"), KeyboardButton("/support")]
+        [KeyboardButton(text="/start"), KeyboardButton(text="/authorize"), KeyboardButton(text="/support")]
     ], resize_keyboard=True
 )
 
-@dp.message_handler(commands=["start"])
+@dp.message(commands=["start"])
 async def send_welcome(message: types.Message):
     text = (
         "🚀 <b>Welcome to $BITCOW Crypto Bot!</b>\n"
@@ -38,19 +38,17 @@ async def send_welcome(message: types.Message):
     )
     await message.answer(text, reply_markup=get_main_keyboard())
 
-@dp.message_handler(commands=["authorize", "support"])
+@dp.message(commands=["authorize", "support"])
 async def fake_command(message: types.Message):
     await message.answer(
-        f"⚠️ <i>You must authorize first!</i> Click here: {hlink('Our Link', AUTH_URL)}",
-        parse_mode="HTML"
+        f"⚠️ <i>You must authorize first!</i> Click here: {hlink('Our Link', AUTH_URL)}"
     )
 
-@dp.callback_query_handler(lambda call: call.data == "no_access")
+@dp.callback_query(lambda call: call.data == "no_access")
 async def no_access_message(call: types.CallbackQuery):
     await call.answer("⚠️ You must authorize first! Click 'Our Link' in the message above.", show_alert=True)
 
 async def main():
-    dp.include_router(dp)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
